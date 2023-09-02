@@ -1,0 +1,43 @@
+import bluetooth
+
+# 扫描并列出可用的蓝牙设备
+def discover_devices():
+    nearby_devices = bluetooth.discover_devices()
+    return nearby_devices
+
+# 连接到指定蓝牙设备
+def connect_to_device(device_address):
+    sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+    sock.connect((device_address, 1))  # 使用RFCOMM通道1进行连接
+    return sock
+
+# 发送音乐播放命令
+def play_music(sock, command):
+    sock.send(command)
+
+# 主程序
+if __name__ == "__main__":
+    # 扫描并列出可用的蓝牙设备
+    devices = discover_devices()
+
+    # 连接到品牌A的蓝牙音响
+    for device in devices:
+        if "BrandA" in bluetooth.lookup_name(device):
+            sock_a = connect_to_device(device)
+            print("已连接到品牌A的蓝牙音响")
+
+    # 连接到品牌B的蓝牙音响
+    for device in devices:
+        if "BrandB" in bluetooth.lookup_name(device):
+            sock_b = connect_to_device(device)
+            print("已连接到品牌B的蓝牙音响")
+
+    # 发送音乐播放命令给品牌A的音响
+    play_music(sock_a, "play")
+
+    # 发送音乐播放命令给品牌B的音响
+    play_music(sock_b, "play")
+
+    # 断开连接
+    sock_a.close()
+    sock_b.close()
